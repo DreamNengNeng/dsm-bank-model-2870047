@@ -3,3 +3,5 @@ node_modules
 .tmp
 npm-debug.log
 \venv
+
+# this can make sure only push my file in the repo, rather than libaraies 

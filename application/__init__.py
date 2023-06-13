@@ -33,7 +33,7 @@ X_categoric = df.iloc[:, [1,2,3,4,6,7]].values
 ohe = OneHotEncoder()
 categoric_data = ohe.fit_transform(X_categoric).toarray()
 categoric_df = pd.DataFrame(categoric_data)
-categoric_df.columns = ohe.get_feature_names()
+categoric_df.columns = ohe.get_feature_names_out()
 
 #combine numeric and categorix
 X_final = pd.concat([numeric_df, categoric_df], axis = 1)
@@ -46,13 +46,13 @@ rfc.fit(X_final, y)
 app = Flask(__name__)
 
 #create api
-@app.route('/api', methods=['GET', 'POST'])
+@app.route('/api', methods=['GET', 'POST'])  # GET: gives more flexibity in terms of cache the data and Post: is more secure
 def predict():
     #get data from request
-    data = request.get_json(force=True)
+    data = request.get_json(force=True)    #this is the data users entered into the Web Application to get the classification of the customers
     data_categoric = np.array([data["job"], data["marital"], data["education"], data["default"], data["housing"], data["loan"]])
-    data_categoric = np.reshape(data_categoric, (1, -1))
-    data_categoric = ohe.transform(data_categoric).toarray()
+    data_categoric = np.reshape(data_categoric, (1, -1))   #reshape the array to a column
+    data_categoric = ohe.transform(data_categoric).toarray()   #convert text to numeric data by using one hot encoder 
  
     data_age = np.array([data["age"]])
     data_age = np.reshape(data_age, (1, -1))
@@ -67,5 +67,4 @@ def predict():
 
     #make predicon using model
     prediction = rfc.predict(data_final)
-    return Response(json.dumps(prediction[0]))
-
+    return Response(json.dumps(prediction[0])) # Response will be either Y or N and sent back to requester 
